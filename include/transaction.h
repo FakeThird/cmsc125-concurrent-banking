@@ -1,6 +1,8 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
+#include <pthread.h>
+
 typedef enum {
     OP_DEPOSIT,   // Add money to account
     OP_WITHDRAW,  // Remove money from account

@@ -3,6 +3,8 @@
 
 #define MAX_ACCOUNTS 100
 
+#include <pthread.h>
+
 typedef struct {
     int account_id;          // Account number
     int balance_centavos;    // Balance in centavos
