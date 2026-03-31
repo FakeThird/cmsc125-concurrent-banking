@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     char accounts_file[256] = "";
     char trace_file[256]  = "";
     int  tick = 100;
+    bool verbose = false;
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "--accounts=", 11) == 0) {
@@ -34,6 +35,9 @@ int main(int argc, char *argv[])
                 return 1;
             }
             printf("tick input in command line detected.");
+        } else if (strncmp(argv[i], "--verbose", 9) == 0) {
+            verbose = true;
+            printf("verbose input in command line detected.");
         } else {
             fprintf(stderr, "Unknown/Missing argument(s): %s\n", argv[i]);
             return 1;
