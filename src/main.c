@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     // --verbose: Print detailed operation logs
     char accounts_file[256] = "";
     char trace_file[256]  = "";
+    int  tick = 100;
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "--accounts=", 11) == 0) {
@@ -26,6 +27,13 @@ int main(int argc, char *argv[])
         } else if (strncmp(argv[i], "--trace=", 7) == 0) {
             strncpy(trace_file, argv[i] + 7, sizeof(trace_file) - 1);
             printf("trace file in command line detected.");
+        } else if (strncmp(argv[i], "--tick-ms=", 10) == 0) {
+            tick = atoi(argv[i] + 10);
+            if (tick <= 0) {
+                fprintf(stderr, "Error: Tick speed must be a positive integer.\n");
+                return 1;
+            }
+            printf("tick input in command line detected.");
         } else {
             fprintf(stderr, "Unknown/Missing argument(s): %s\n", argv[i]);
             return 1;
@@ -50,5 +58,4 @@ int main(int argc, char *argv[])
     
     
     return 1;
-    
 }
