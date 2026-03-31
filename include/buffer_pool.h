@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdbool.h>
+
 #include "bank.h"
 
 #define BUFFER_POOL_SIZE 5

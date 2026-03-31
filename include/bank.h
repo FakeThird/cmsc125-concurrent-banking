@@ -1,9 +1,11 @@
 #ifndef BANK_H
 #define BANK_H
 
+#define _XOPEN_SOURCE 700
 #define MAX_ACCOUNTS 100
-
+    
 #include <pthread.h>
+#include <stdbool.h>
 
 typedef struct {
     int account_id;          // Account number
