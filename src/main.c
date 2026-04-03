@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     // --verbose: Print detailed operation logs
     char accounts_file[256] = "";
     char trace_file[256]  = "";
+    char deadlock[16]  = "detection";
     int  tick = 100;
     bool verbose = false;
 
@@ -28,6 +29,9 @@ int main(int argc, char *argv[])
         } else if (strncmp(argv[i], "--trace=", 7) == 0) {
             strncpy(trace_file, argv[i] + 7, sizeof(trace_file) - 1);
             printf("trace file in command line detected.");
+        } else if (strncmp(argv[i], "--deadlock=", 11) == 0) {
+            strncpy(trace_file, argv[i] + 11, sizeof(trace_file) - 1);
+            printf("deadlock in command line detected.");
         } else if (strncmp(argv[i], "--tick-ms=", 10) == 0) {
             tick = atoi(argv[i] + 10);
             if (tick <= 0) {
@@ -60,6 +64,11 @@ int main(int argc, char *argv[])
         printf("trace file found.");
     }
     
-    
+    if (!(strncmp(deadlock, "detection", 10) == 0 || strncmp(deadlock, "prevention", 10) == 0)) {
+        printf("deadlock strategy not avaialble.");
+        return 1;
+    } else {
+        printf("deadlock strategy avaialble.");
+    }
     return 1;
 }
