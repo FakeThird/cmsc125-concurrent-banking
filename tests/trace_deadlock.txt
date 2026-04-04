@@ -1,0 +1,7 @@
+# Two transfers in opposite directions
+# Expected:
+# With --deadlock=prevention: Both succeed, lock ordering prevents deadlock
+# With --deadlock=detection: Deadlock detected, one transaction aborted
+
+T1  0  TRANSFER  10  20  5000
+T2  0  TRANSFER  20  10  3000

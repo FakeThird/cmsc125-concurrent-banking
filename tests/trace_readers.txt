@@ -1,6 +1,6 @@
 # Multiple transactions reading same account simultaneously
 # Expected: All complete at same tick (reader-writer lock allows concurrent reads)
-
+ 
 T1  0  BALANCE   10
 T2  0  BALANCE   10
 T3  0  BALANCE   10

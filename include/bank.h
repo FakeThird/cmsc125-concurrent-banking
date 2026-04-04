@@ -3,7 +3,8 @@
 
 #define _XOPEN_SOURCE 700
 #define MAX_ACCOUNTS 100
-    
+#define MAX_LINE        256
+
 #include <pthread.h>
 #include <stdbool.h>
 
