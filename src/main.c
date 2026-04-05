@@ -48,14 +48,21 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
-
-    FILE *accounts = fopen(accounts_file, "r");
-    if (!accounts) {
-        printf("account file not found.\n");
+ 
+    int num_accounts = 0;
+    Account *accounts = load_accounts(accounts_file, &num_accounts);
+    if (accounts == NULL) {
+        printf("account loading did not occur.\n");
         return 1;
     } else {
-        printf("account file found.\n");
+        printf("account loading successful.\n");
     }
+
+    Bank bank = {
+        .accounts = accounts,
+        .num_accounts = num_accounts,
+        .bank_lock = NULL
+    };
 
     FILE *trace = fopen(trace_file, "r");
     if (!trace) {
