@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+Bank bank;
+
 int get_balance(int account_id) {
     Account* acc = &bank.accounts[account_id];
     

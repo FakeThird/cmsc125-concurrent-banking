@@ -26,23 +26,23 @@ int main(int argc, char *argv[])
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "--accounts=", 11) == 0) {
             strncpy(accounts_file, argv[i] + 11, sizeof(accounts_file) - 1);
-            printf("account file in command line detected.");
-        } else if (strncmp(argv[i], "--trace=", 7) == 0) {
-            strncpy(trace_file, argv[i] + 7, sizeof(trace_file) - 1);
-            printf("trace file in command line detected.");
+            printf("account file in command line detected.\n");
+        } else if (strncmp(argv[i], "--trace=", 8) == 0) {
+            strncpy(trace_file, argv[i] + 8, sizeof(trace_file) - 1);
+            printf("trace file in command line detected.\n");
         } else if (strncmp(argv[i], "--deadlock=", 11) == 0) {
-            strncpy(trace_file, argv[i] + 11, sizeof(trace_file) - 1);
-            printf("deadlock in command line detected.");
+            strncpy(deadlock, argv[i] + 11, sizeof(deadlock) - 1);
+            printf("deadlock in command line detected.\n");
         } else if (strncmp(argv[i], "--tick-ms=", 10) == 0) {
             tick = atoi(argv[i] + 10);
             if (tick <= 0) {
                 fprintf(stderr, "Error: Tick speed must be a positive integer.\n");
                 return 1;
             }
-            printf("tick input in command line detected.");
+            printf("tick input in command line detected.\n");
         } else if (strncmp(argv[i], "--verbose", 9) == 0) {
             verbose = true;
-            printf("verbose input in command line detected.");
+            printf("verbose input in command line detected.\n");
         } else {
             fprintf(stderr, "Unknown/Missing argument(s): %s\n", argv[i]);
             return 1;
@@ -51,25 +51,25 @@ int main(int argc, char *argv[])
 
     FILE *accounts = fopen(accounts_file, "r");
     if (!accounts) {
-        printf("account file not found.");
+        printf("account file not found.\n");
         return 1;
     } else {
-        printf("account file found.");
+        printf("account file found.\n");
     }
 
     FILE *trace = fopen(trace_file, "r");
     if (!trace) {
-        printf("trace file not found.");
+        printf("trace file not found.\n");
         return 1;
     } else {
-        printf("trace file found.");
+        printf("trace file found.\n");
     }
     
     if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
-        printf("deadlock strategy not avaialble.");
+        printf("deadlock strategy not avaialble.\n");
         return 1;
     } else {
-        printf("deadlock strategy avaialble.");
+        printf("deadlock strategy avaialble.\n");
     }
     return 1;
 }
