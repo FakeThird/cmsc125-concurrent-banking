@@ -9,9 +9,11 @@ pthread_cond_t tick_changed;
 
 // Timer thread increments clock every TICK_INTERVAL_MS
 void* timer_thread(void* arg) {
-    while (simulation_running) {
+    // Actual Code: while (simulation_running)
+    while (1) {
         pthread_mutex_lock(&tick_lock);
-        usleep(TICK_INTERVAL_MS * 1000);  // Sleep to simulate a tick
+        // Actual Code: usleep(TICK_INTERVAL_MS * 1000); 
+        usleep(1000);  // Sleep to simulate a tick
         global_tick++;
         pthread_cond_broadcast(&tick_changed);  // Wake waiting
         pthread_mutex_unlock(&tick_lock);
