@@ -58,11 +58,10 @@ int main(int argc, char *argv[])
         printf("account loading successful.\n");
     }
 
-    Bank bank = {
-        .accounts = accounts,
-        .num_accounts = num_accounts,
-        .bank_lock = NULL
-    };
+    bank.num_accounts = num_accounts;
+    for(int i = 0; i < num_accounts; i++) {
+        bank.accounts[i] = accounts[i];
+    }
 
     FILE *trace = fopen(trace_file, "r");
     if (!trace) {
