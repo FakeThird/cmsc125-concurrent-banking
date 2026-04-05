@@ -42,7 +42,8 @@ bool detect_deadlock() {
     bool visited[MAX_TRANSACTIONS] = {false};
     bool rec_stack[MAX_TRANSACTIONS] = {false};
     
-    for (int i = 0; i < num_active_transactions; i++) {
+    // Actual Code: for (int i = 0; i < num_active_transactions; i++) {
+    for (int i = 0; i < 100; i++) {
         if (!visited[i]) {
             if (has_cycle(i, visited, rec_stack)) {
                 pthread_mutex_unlock(&graph_lock);

@@ -1,6 +1,7 @@
 /*
  * file: main.c
  */
+#include "../include/bank.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
         printf("trace file found.");
     }
     
-    if (!(strncmp(deadlock, "detection", 10) == 0 || strncmp(deadlock, "prevention", 10) == 0)) {
+    if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
         printf("deadlock strategy not avaialble.");
         return 1;
     } else {
