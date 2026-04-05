@@ -1,6 +1,9 @@
 
 #include "../include/transaction.h"
 #include "../include/timer.h"
+#include "../include/bank.h"
+
+#include <stdio.h>
 
 void* execute_transaction(void* arg) {
     Transaction* tx = (Transaction*)arg;
