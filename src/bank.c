@@ -75,6 +75,7 @@ Account *load_accounts(const char *filename, int *num_accounts)
         if (sscanf(p, "%d %d",
                     &accounts[count].account_id,
                     &accounts[count].balance_centavos) == 2) {
+            print_account(&accounts[count]);
             count++;
         }
     }
@@ -82,3 +83,9 @@ Account *load_accounts(const char *filename, int *num_accounts)
     *num_accounts = count;
     return accounts;
 } 
+
+void print_account(Account* account)
+{
+    printf("%d \n", account -> account_id);
+    printf("%d \n", account -> balance_centavos);
+}
