@@ -70,7 +70,8 @@ int main(int argc, char *argv[])
     }
 
     // Transactions
-    Transaction *transactions = load_transactions(trace_file);
+    int num_transactions = 0;
+    Transaction *transactions = load_transactions(trace_file, &num_transactions);
     if (transactions == NULL) {
         printf("transaction loading did not occur.\n");
         return 0;

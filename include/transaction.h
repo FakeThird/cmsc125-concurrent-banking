@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+#define MAX_TRANSACTIONS 256
+
 typedef enum {
     OP_DEPOSIT,   // Add money to account
     OP_WITHDRAW,  // Remove money from account
@@ -40,5 +42,6 @@ typedef struct {
 } Transaction;
 
 void* execute_transaction(void* arg);
+Transaction *load_transactions(const char *filename, int *num_transactions);
 
 #endif

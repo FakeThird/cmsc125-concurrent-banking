@@ -54,3 +54,114 @@ void* execute_transaction(void* arg) {
     tx->status = TX_COMMITTED;
     return NULL;
 }
+
+Transaction *load_transactions(const char *filename, int *num_transactions)
+{
+    int capacity = 4;
+    int count = 0;
+    Transaction *transactions = malloc(capacity * sizeof(Transaction));
+    if (!transactions)
+        return NULL;
+
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        free(transactions);
+        return NULL;
+    }
+
+    char line[MAX_LINE];
+    while (fgets(line, MAX_LINE, file))
+    {
+        char *p = line;
+        while (*p == ' ' || *p == '\t')
+            p++;
+        if (*p == '#' || *p == '\n' || *p == '\r' || *p == '\0')
+            continue;
+
+        char tx_label[16], op_str[16];
+        int start_tick, account_id;
+
+        if (sscanf(p, "%15s %d %15s %d", tx_label, &start_tick, op_str, &account_id) < 4)
+            continue;
+
+        int tx_id = atoi(tx_label + 1);  // "T3" -> 3
+
+        // Find existing transaction with this tx_id
+        Transaction *tx = NULL;
+        for (int i = 0; i < count; i++)
+        {
+            if (transactions[i].tx_id == tx_id)
+            {
+                tx = &transactions[i];
+                break;
+            }
+        }
+
+        // New transaction ID — allocate a slot
+        if (tx == NULL)
+        {
+            if (count >= capacity)
+            {
+                capacity *= 2;
+                Transaction *tmp = realloc(transactions, capacity * sizeof(Transaction));
+                if (!tmp)
+                {
+                    free(transactions);
+                    fclose(file);
+                    return NULL;
+                }
+                transactions = tmp;
+            }
+            tx = &transactions[count];
+            tx->tx_id      = tx_id;
+            tx->start_tick = start_tick;
+            tx->num_ops    = 0;
+            tx->status     = TX_RUNNING;
+            tx->wait_ticks = 0;
+            count++;
+        }
+
+        if (tx->num_ops >= 256)
+        {
+            fprintf(stderr, "Warning: T%d exceeded max ops, skipping line\n", tx_id);
+            continue;
+        }
+
+        Operation *op = &tx->ops[tx->num_ops];
+        op->account_id      = account_id;
+        op->amount_centavos = 0;
+        op->target_account  = -1;
+
+        if (strcmp(op_str, "DEPOSIT") == 0)
+        {
+            sscanf(p, "%*s %*d %*s %*d %d", &op->amount_centavos);
+            op->type = OP_DEPOSIT;
+        }
+        else if (strcmp(op_str, "WITHDRAW") == 0)
+        {
+            sscanf(p, "%*s %*d %*s %*d %d", &op->amount_centavos);
+            op->type = OP_WITHDRAW;
+        }
+        else if (strcmp(op_str, "TRANSFER") == 0)
+        {
+            sscanf(p, "%*s %*d %*s %*d %d %d", &op->target_account, &op->amount_centavos);
+            op->type = OP_TRANSFER;
+        }
+        else if (strcmp(op_str, "BALANCE") == 0)
+        {
+            op->type = OP_BALANCE;
+        }
+        else
+        {
+            fprintf(stderr, "Warning: unknown op '%s' on T%d, skipping\n", op_str, tx_id);
+            continue;
+        }
+
+        tx->num_ops++;
+    }
+
+    fclose(file);
+    *num_transactions = count;
+    return transactions;
+}
