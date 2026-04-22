@@ -4,15 +4,13 @@
 #include <pthread.h>
 
 volatile int global_tick = 0;
-volatile int all_transactions_done = 0;
 pthread_mutex_t tick_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t tick_changed = PTHREAD_COND_INITIALIZER;
 
 // Timer thread increments clock every TICK_INTERVAL_MS
 void *timer_thread(void *arg)
 {
-    // Actual Code: while (simulation_running)
-    while (!all_transactions_done)
+    while (simulation_running)
     {
         usleep(tick_interval_ms * 1000); // Sleep to simulate a tick
 

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
             tick = atoi(argv[i] + 10);
             if (tick <= 0) {
                 fprintf(stderr, "Error: Tick speed must be a positive integer.\n");
-                return 1;
+                return 0;
             }
             printf("tick input in command line detected.\n");
         } else if (strncmp(argv[i], "--verbose", 9) == 0) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             printf("verbose input in command line detected.\n");
         } else {
             fprintf(stderr, "Unknown/Missing argument(s): %s\n", argv[i]);
-            return 1;
+            return 0;
         }
     }
     
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     Account *accounts = load_accounts(accounts_file, &num_accounts);
     if (accounts == NULL) {
         printf("account loading did not occur.\n");
-        return 1;
+        return 0;
     } else {
         printf("account loading successful.\n");
     }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     Transaction *transactions = load_transactions(trace_file);
     if (transactions == NULL) {
         printf("transaction loading did not occur.\n");
-        return 1;
+        return 0;
     } else {
         printf("transaction loading successful.\n");
     }
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     // Deadlock Strategy
     if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
         printf("deadlock strategy not avaialble.\n");
-        return 1;
+        return 0;
     } else {
         printf("deadlock strategy avaialble.\n");
     }
@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
     // Tick Interval
     tick_interval_ms = tick;
 
-    
-    return 1;
+    simulation_running = 1;
+    while(simulation_running){
+
+    }
 }

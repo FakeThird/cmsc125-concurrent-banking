@@ -4,7 +4,7 @@
 #define MAX_ACCOUNTS 100
 
 extern volatile int global_tick;
-extern volatile int all_transactions_done;
+extern volatile int simulation_running;
 extern int tick_interval_ms;
 
 void* timer_thread(void* arg);
