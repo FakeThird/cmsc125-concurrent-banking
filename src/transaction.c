@@ -120,6 +120,7 @@ Transaction *load_transactions(const char *filename, int *num_transactions)
             tx->status     = TX_RUNNING;
             tx->wait_ticks = 0;
             count++;
+            print_transaction(tx); 
         }
 
         if (tx->num_ops >= 256)
@@ -164,4 +165,39 @@ Transaction *load_transactions(const char *filename, int *num_transactions)
     fclose(file);
     *num_transactions = count;
     return transactions;
+}
+
+void print_transaction(const Transaction *tx)
+{
+    const char *status_str[] = { "RUNNING", "COMMITTED", "ABORTED" };
+
+    printf("T%d | start_tick: %d | ops: %d | status: %s\n",
+           tx->tx_id,
+           tx->start_tick,
+           tx->num_ops,
+           status_str[tx->status]);
+
+    for (int i = 0; i < tx->num_ops; i++)
+    {
+        const Operation *op = &tx->ops[i];
+        switch (op->type)
+        {
+            case OP_DEPOSIT:
+                printf("  [%d] DEPOSIT  account %d  amount %d\n",
+                       i, op->account_id, op->amount_centavos);
+                break;
+            case OP_WITHDRAW:
+                printf("  [%d] WITHDRAW account %d  amount %d\n",
+                       i, op->account_id, op->amount_centavos);
+                break;
+            case OP_TRANSFER:
+                printf("  [%d] TRANSFER account %d -> %d  amount %d\n",
+                       i, op->account_id, op->target_account, op->amount_centavos);
+                break;
+            case OP_BALANCE:
+                printf("  [%d] BALANCE  account %d\n",
+                       i, op->account_id);
+                break;
+        }
+    }
 }

@@ -43,5 +43,6 @@ typedef struct {
 
 void* execute_transaction(void* arg);
 Transaction *load_transactions(const char *filename, int *num_transactions);
+void print_transaction(const Transaction *tx);
 
 #endif
