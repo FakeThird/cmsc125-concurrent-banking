@@ -2,6 +2,7 @@
  * file: main.c
  */
 #include "../include/bank.h"
+#include "../include/transaction.h"
 #include "../include/timer.h"
 
 #include <stdio.h>
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
     int  tick = 100;
     bool verbose = false;
 
+    // Command-line Argument Parsing:
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "--accounts=", 11) == 0) {
             strncpy(accounts_file, argv[i] + 11, sizeof(accounts_file) - 1);
@@ -49,7 +51,9 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
- 
+    
+    // Initilizations:
+    // Accounts
     int num_accounts = 0;
     Account *accounts = load_accounts(accounts_file, &num_accounts);
     if (accounts == NULL) {
@@ -59,19 +63,22 @@ int main(int argc, char *argv[])
         printf("account loading successful.\n");
     }
 
+    // Bank
     bank.num_accounts = num_accounts;
     for(int i = 0; i < num_accounts; i++) {
         bank.accounts[i] = accounts[i];
     }
 
-    FILE *trace = fopen(trace_file, "r");
-    if (!trace) {
-        printf("trace file not found.\n");
+    // Transactions
+    Transaction *transactions = load_transactions(trace_file);
+    if (transactions == NULL) {
+        printf("transaction loading did not occur.\n");
         return 1;
     } else {
-        printf("trace file found.\n");
+        printf("transaction loading successful.\n");
     }
     
+    // Deadlock Strategy
     if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
         printf("deadlock strategy not avaialble.\n");
         return 1;
@@ -79,6 +86,9 @@ int main(int argc, char *argv[])
         printf("deadlock strategy avaialble.\n");
     }
 
+    // Tick Interval
     tick_interval_ms = tick;
+
+    
     return 1;
 }
