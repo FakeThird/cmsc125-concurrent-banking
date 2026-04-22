@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
     for(int i = 0; i < num_accounts; i++) {
         bank.accounts[i] = accounts[i];
     }
-
+    free(accounts);
+    
     // Transactions
     int num_transactions = 0;
     Transaction *transactions = load_transactions(trace_file, &num_transactions);
@@ -91,7 +92,26 @@ int main(int argc, char *argv[])
     tick_interval_ms = tick;
 
     simulation_running = 1;
-    while(simulation_running){
 
+    // Start the timer thread
+    pthread_t timer_tid;
+    pthread_create(&timer_tid, NULL, timer_thread, NULL);
+
+    // Launch one thread per transaction
+    for (int i = 0; i < num_transactions; i++) {
+        pthread_create(&transactions[i].thread, NULL,
+                       execute_transaction, &transactions[i]);
     }
+
+    // Wait for all transaction threads to finish
+    for (int i = 0; i < num_transactions; i++) {
+        pthread_join(transactions[i].thread, NULL);
+    }
+
+    // Stop the timer thread
+    simulation_running = 0;
+    pthread_join(timer_tid, NULL);
+
+    // Cleanup
+    free(transactions);
 }
