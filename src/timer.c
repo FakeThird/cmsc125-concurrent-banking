@@ -12,7 +12,6 @@ pthread_cond_t tick_changed = PTHREAD_COND_INITIALIZER;
 void *timer_thread(void *arg)
 {
     // Actual Code: while (simulation_running)
-    int tick_interval_ms = *(int *)arg; // Get tick interval from argument
     while (!all_transactions_done)
     {
         usleep(tick_interval_ms * 1000); // Sleep to simulate a tick

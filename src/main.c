@@ -2,6 +2,7 @@
  * file: main.c
  */
 #include "../include/bank.h"
+#include "../include/timer.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -77,5 +78,7 @@ int main(int argc, char *argv[])
     } else {
         printf("deadlock strategy avaialble.\n");
     }
+
+    tick_interval_ms = tick;
     return 1;
 }
