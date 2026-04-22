@@ -4,6 +4,8 @@
 #include <pthread.h>
 
 volatile int global_tick = 0;
+volatile int simulation_running = 0;
+int tick_interval_ms = 100;
 pthread_mutex_t tick_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t tick_changed = PTHREAD_COND_INITIALIZER;
 
