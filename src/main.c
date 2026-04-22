@@ -80,7 +80,10 @@ int main(int argc, char *argv[])
     } else {
         printf("transaction loading successful.\n");
     }
-    
+
+    for (int i = 0; i < num_transactions; i++)
+        print_transaction(&transactions[i]);
+        
     // Deadlock Strategy
     if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
         printf("deadlock strategy not avaialble.\n");

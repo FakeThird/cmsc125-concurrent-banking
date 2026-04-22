@@ -1,4 +1,4 @@
-
+#define _POSIX_C_SOURCE 200809L
 #include "../include/timer.h"
 
 #include <pthread.h>
@@ -12,6 +12,8 @@ pthread_cond_t tick_changed = PTHREAD_COND_INITIALIZER;
 // Timer thread increments clock every TICK_INTERVAL_MS
 void *timer_thread(void *arg)
 {
+    // Supress for now
+    (void)arg;
     while (simulation_running)
     {
         usleep(tick_interval_ms * 1000); // Sleep to simulate a tick

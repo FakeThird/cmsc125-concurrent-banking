@@ -121,7 +121,6 @@ Transaction *load_transactions(const char *filename, int *num_transactions)
             tx->status     = TX_RUNNING;
             tx->wait_ticks = 0;
             count++;
-            print_transaction(tx); 
         }
 
         if (tx->num_ops >= 256)
