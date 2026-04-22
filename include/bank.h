@@ -3,7 +3,7 @@
 
 #define _XOPEN_SOURCE 700
 #define MAX_ACCOUNTS 100
-#define MAX_LINE        256
+#define MAX_LINE 256
 
 #include <pthread.h>
 #include <stdbool.h>
@@ -27,6 +27,6 @@ void deposit(int account_id, int amount_centavos);
 bool withdraw(int account_id, int amount_centavos);
 bool transfer(int from_id, int to_id, int amount_centavos);
 Account *load_accounts(const char *filename, int *num_accounts);
-
+void print_account(Account* account);
 
 #endif
