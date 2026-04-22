@@ -4,6 +4,7 @@
 #include "../include/bank.h"
 #include "../include/transaction.h"
 #include "../include/timer.h"
+#include "../include/metrics.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
         bank.accounts[i] = accounts[i];
     }
     free(accounts);
-    
+
     // Transactions
     int num_transactions = 0;
     Transaction *transactions = load_transactions(trace_file, &num_transactions);
@@ -111,7 +112,8 @@ int main(int argc, char *argv[])
     // Stop the timer thread
     simulation_running = 0;
     pthread_join(timer_tid, NULL);
-
+    print_accounts_to_file("../tests/post_accounts.txt");
+    
     // Cleanup
     free(transactions);
 }
