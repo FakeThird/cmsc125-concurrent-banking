@@ -1,6 +1,7 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include "../include/bank.h"
+#include "../include/utils.h"
 
 #include <stdbool.h>
 #include <stdio.h>

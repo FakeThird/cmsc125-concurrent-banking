@@ -1,4 +1,5 @@
-
+#include <stdlib.h>
+#include <string.h> 
 #include "../include/transaction.h"
 #include "../include/timer.h"
 #include "../include/bank.h"
