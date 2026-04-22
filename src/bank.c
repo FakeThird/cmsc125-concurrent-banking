@@ -52,7 +52,8 @@ bool transfer(int from_id, int to_id, int amount_centavos)
     // See Part 3 for proper implementation
     Account *a = find_account(from_id);
     Account *b = find_account(to_id);
-    if (!a || !b){
+    if (!a || !b)
+    {
         return false; // Invalid accounts
     }
     Account *first = (from_id < to_id) ? a : b;
@@ -111,8 +112,9 @@ Account *load_accounts(const char *filename, int *num_accounts)
             accounts = tmp;
         }
         if (sscanf(p, "%d %d",
-                    &accounts[count].account_id,
-                    &accounts[count].balance_centavos) == 2) {
+                   &accounts[count].account_id,
+                   &accounts[count].balance_centavos) == 2)
+        {
             print_account(&accounts[count]);
             count++;
         }
@@ -120,10 +122,10 @@ Account *load_accounts(const char *filename, int *num_accounts)
     fclose(file);
     *num_accounts = count;
     return accounts;
-} 
+}
 
-void print_account(Account* account)
+void print_account(Account *account)
 {
-    printf("%d \n", account -> account_id);
-    printf("%d \n", account -> balance_centavos);
+    printf("%d \n", account->account_id);
+    printf("%d \n", account->balance_centavos);
 }
