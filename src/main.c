@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < num_transactions; i++)
         print_transaction(&transactions[i]);
-        
+
     // Deadlock Strategy
     if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0)) {
         printf("deadlock strategy not avaialble.\n");
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     // Stop the timer thread
     simulation_running = 0;
     pthread_join(timer_tid, NULL);
-    print_accounts_to_file("../tests/post_accounts.txt");
+    print_accounts_to_file("tests/post_accounts.txt");
     
     // Cleanup
     free(transactions);

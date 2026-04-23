@@ -12,7 +12,8 @@ Bank bank;
 
 int get_balance(int account_id)
 {
-    Account *acc = &bank.accounts[account_id];
+    Account *acc = find_account(account_id);
+    if (!acc) return -1;
 
     pthread_rwlock_rdlock(&acc->lock);
     int balance = acc->balance_centavos;
@@ -23,7 +24,8 @@ int get_balance(int account_id)
 
 void deposit(int account_id, int amount_centavos)
 {
-    Account *acc = &bank.accounts[account_id];
+    Account *acc = find_account(account_id);
+    if (!acc) return;
 
     pthread_rwlock_wrlock(&acc->lock);
     acc->balance_centavos += amount_centavos;
@@ -32,7 +34,8 @@ void deposit(int account_id, int amount_centavos)
 
 bool withdraw(int account_id, int amount_centavos)
 {
-    Account *acc = &bank.accounts[account_id];
+    Account *acc = find_account(account_id);
+    if (!acc) return false;
 
     pthread_rwlock_wrlock(&acc->lock);
 
@@ -63,17 +66,21 @@ bool transfer(int from_id, int to_id, int amount_centavos)
     pthread_rwlock_wrlock(&first->lock);
     pthread_rwlock_wrlock(&second->lock);
 
-    bool success = true;
-    if (first->balance_centavos < amount_centavos)
+    // Check sufficient funds
+    if (a->balance_centavos < amount_centavos)
     {
-        pthread_rwlock_unlock(&first->lock);
         pthread_rwlock_unlock(&second->lock);
-        success = false; // Insufficient funds
+        pthread_rwlock_unlock(&first->lock);
+        return false; // Insufficient funds
     }
 
-    first->balance_centavos -= amount_centavos;
-    second->balance_centavos += amount_centavos;
-    return success;
+    // Perform transfer
+    a->balance_centavos -= amount_centavos;
+    b->balance_centavos += amount_centavos;
+
+    pthread_rwlock_unlock(&second->lock);
+    pthread_rwlock_unlock(&first->lock);
+    return true;
 }
 
 Account *load_accounts(const char *filename, int *num_accounts)
