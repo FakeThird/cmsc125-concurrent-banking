@@ -12,12 +12,12 @@ void* execute_transaction(void* arg) {
     // Wait until scheduled start time
     wait_until_tick(tx->start_tick);
     
-    tx->actual_start = global_tick;
+    tx->actual_start = get_tick();
     
     for (int i = 0; i < tx->num_ops; i++) {
         Operation* op = &tx->ops[i];
         
-        int tick_before = global_tick;
+        int tick_before = get_tick();
         
         switch (op->type) {
             case OP_DEPOSIT:
@@ -48,10 +48,10 @@ void* execute_transaction(void* arg) {
                 break;
         }
         
-        tx->wait_ticks += (global_tick - tick_before);
+        tx->wait_ticks += (get_tick() - tick_before);
     }
     
-    tx->actual_end = global_tick;
+    tx->actual_end = get_tick();
     tx->status = TX_COMMITTED;
     return NULL;
 }
