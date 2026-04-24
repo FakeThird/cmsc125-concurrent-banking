@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < num_accounts; i++) {
         bank.accounts[i] = accounts[i];
     }
+    pthread_mutex_init(&bank.bank_lock, NULL);
     free(accounts);
 
     // Transactions
