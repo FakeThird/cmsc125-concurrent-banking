@@ -120,4 +120,5 @@ int main(int argc, char *argv[])
     
     // Cleanup
     free(transactions);
+    return 0;
 }

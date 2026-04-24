@@ -9,5 +9,6 @@ extern int tick_interval_ms;
 
 void* timer_thread(void* arg);
 void wait_until_tick(int target_tick);
+int get_tick(void);
 
 #endif

@@ -39,3 +39,11 @@ void wait_until_tick(int target_tick)
     }
     pthread_mutex_unlock(&tick_lock);
 }
+
+int get_tick(void)
+{
+    pthread_mutex_lock(&tick_lock);
+    int t = global_tick;
+    pthread_mutex_unlock(&tick_lock);
+    return t;
+}
