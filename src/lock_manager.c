@@ -6,6 +6,7 @@
 
 WaitForEntry wait_graph[MAX_TRANSACTIONS];
 pthread_mutex_t graph_lock;
+int num_active_transactions = 0;
 
 // When a transaction blocks on a lock, record it
 void record_wait(int tx_id, int account_id, int holder_tx) {
@@ -43,7 +44,7 @@ bool detect_deadlock() {
     bool rec_stack[MAX_TRANSACTIONS] = {false};
     
     // Actual Code: for (int i = 0; i < num_active_transactions; i++) {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < num_active_transactions; i++) {
         if (!visited[i]) {
             if (has_cycle(i, visited, rec_stack)) {
                 pthread_mutex_unlock(&graph_lock);
