@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
     free(accounts);
 
     // Buffer Pool
-    BufferPool pool;
-    init_buffer_pool(&pool);
+    BufferPool buffer_pool;
+    init_buffer_pool(&buffer_pool);
 
     // Transactions
     int num_transactions = 0;
