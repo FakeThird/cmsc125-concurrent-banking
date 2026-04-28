@@ -6,6 +6,7 @@
 #include "../include/timer.h"
 #include "../include/metrics.h"
 #include "../include/lock_manager.h"
+#include "../include/buffer_pool.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -88,6 +89,10 @@ int main(int argc, char *argv[])
     }
     pthread_mutex_init(&bank.bank_lock, NULL);
     free(accounts);
+
+    // Buffer Pool
+    BufferPool pool;
+    init_buffer_pool(&pool);
 
     // Transactions
     int num_transactions = 0;
