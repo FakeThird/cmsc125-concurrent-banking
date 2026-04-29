@@ -83,3 +83,24 @@ test5: all
 	@echo "=== Test 5: Buffer Pool Saturation (trace_buffer.txt) ==="
 	./$(TARGET) --accounts=$(ACCOUNTS) --trace=$(TRACE_BUFFER) \
 		--deadlock=$(DEADLOCK) --tick-ms=$(TICK_MS) --verbose
+
+# -------------------------------------------------------------------
+# Test file management
+# -------------------------------------------------------------------
+
+TESTFILES = $(ACCOUNTS) $(TRACE_SIMPLE) $(TRACE_READERS) \
+            $(TRACE_DEADLOCK) $(TRACE_ABORT) $(TRACE_BUFFER) \
+            tests/post_accounts.txt
+
+.PHONY: reset-tests reset-output
+
+# Restore all test INPUT files to last git-committed state
+reset-tests:
+	git checkout HEAD -- $(ACCOUNTS) $(TRACE_SIMPLE) $(TRACE_READERS) \
+	                     $(TRACE_DEADLOCK) $(TRACE_ABORT) $(TRACE_BUFFER)
+	@echo "Test input files restored from git."
+
+# Delete only the generated OUTPUT file
+reset-output:
+	rm -f tests/post_accounts.txt
+	@echo "Output file cleared."
