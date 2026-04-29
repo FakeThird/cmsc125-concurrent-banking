@@ -100,16 +100,7 @@ After any run, final account balances are written to `tests/post_accounts.txt`.
 
 # Limitations and Bugs
 
-### 1. `--verbose` flag is parsed but not yet wired
-The `verbose` variable is set correctly from the command line but no verbose logging path exists yet in `execute_transaction`. The flag has no effect at runtime.
-
-### 2. `--deadlock=detection` is not yet implemented
-The `lock_manager.c` file contains `record_wait`, `has_cycle`, and `detect_deadlock` but they are never called from `transfer` or `execute_transaction`. Passing `--deadlock=detection` currently behaves identically to prevention.
-
-### 3. Buffer pool is not yet integrated into the transaction lifecycle
-`init_buffer_pool`, `load_account`, and `unload_account` exist in `buffer_pool.c` but are never called. The buffer pool semaphores are not exercised during transaction execution.
-
-### 4. Per-account `pthread_rwlock_t` is not explicitly initialized
+### 1. Per-account `pthread_rwlock_t` is not explicitly initialized
 The rwlock inside each `Account` struct is not initialized with `pthread_rwlock_init` before use. It relies on zero-initialization of the global `Bank` struct, which is not guaranteed to be a valid lock state on all platforms.
 
 # Design and Architecture Overview
