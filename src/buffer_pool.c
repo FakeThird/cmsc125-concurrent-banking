@@ -1,10 +1,21 @@
 
 #include "../include/buffer_pool.h"
+#include "../include/utils.h"
 
 #include <stdbool.h>
+#include <stdio.h>
+
+BufferPool buffer_pool;
 
 void init_buffer_pool(BufferPool *pool)
 {
+    for (int i = 0; i < BUFFER_POOL_SIZE; i++)
+    {
+        pool->slots[i].in_use     = false;
+        pool->slots[i].account_id = -1;
+        pool->slots[i].data       = NULL;
+    }
+
     sem_init(&pool->empty_slots, 0, BUFFER_POOL_SIZE);
     sem_init(&pool->full_slots, 0, 0);
     pthread_mutex_init(&pool->pool_lock, NULL);
