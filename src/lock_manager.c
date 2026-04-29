@@ -37,7 +37,7 @@ bool has_cycle(int tx_id, bool* visited, bool* rec_stack) {
     return false;
 }
 
-bool detect_deadlock(void) {
+bool detect_deadlock() {
     pthread_mutex_lock(&graph_lock);
     
     bool visited[MAX_TRANSACTIONS] = {false};
