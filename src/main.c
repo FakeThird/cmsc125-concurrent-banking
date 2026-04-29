@@ -13,6 +13,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+// Global Variables
+bool verbose = false;
+int deadlock_strategy = 0; // 0 = prevention, 1 = detection
+int initial_account_count = 0;
+
 int main(int argc, char *argv[])
 {
     // Command-line Options:
@@ -23,9 +28,8 @@ int main(int argc, char *argv[])
     // --verbose: Print detailed operation logs
     char accounts_file[256] = "";
     char trace_file[256] = "";
-    char deadlock[16] = "detection";
+    char deadlock[16] = "prevention";
     int tick = 100;
-    bool verbose = false;
 
     // Command-line Argument Parsing:
     for (int i = 1; i < argc; i++)
@@ -68,6 +72,24 @@ int main(int argc, char *argv[])
     }
 
     // Initilizations:
+
+    // Deadlock Strategy
+    if (strncmp(deadlock, "prevention", 16) == 0)
+    {
+        deadlock_strategy = 0;
+        printf("deadlock prevention strategy selected.\n");
+    }
+    else if (strncmp(deadlock, "detection", 16) == 0)
+    {
+        deadlock_strategy = 1;
+        printf("deadlock detection strategy selected.\n");
+    }
+    else
+    {
+        fprintf(stderr, "Error: Invalid deadlock strategy '%s'. Use 'prevention' or 'detection'.\n", deadlock);
+        return 0;
+    }
+
     // Accounts
     int num_accounts = 0;
     Account *accounts = load_accounts(accounts_file, &num_accounts);
@@ -88,10 +110,16 @@ int main(int argc, char *argv[])
         bank.accounts[i] = accounts[i];
     }
     pthread_mutex_init(&bank.bank_lock, NULL);
+
+    initial_account_count = 0;
+    for (int i = 0; i < num_accounts; i++)
+    {
+        initial_account_count += bank.accounts[i].balance_centavos;
+    }
+
     free(accounts);
 
     // Buffer Pool
-    BufferPool buffer_pool;
     init_buffer_pool(&buffer_pool);
 
     // Transactions
@@ -109,17 +137,6 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < num_transactions; i++)
         print_transaction(&transactions[i]);
-
-    // Deadlock Strategy
-    if (!(strncmp(deadlock, "detection", 16) == 0 || strncmp(deadlock, "prevention", 16) == 0))
-    {
-        printf("deadlock strategy not avaialble.\n");
-        return 0;
-    }
-    else
-    {
-        printf("deadlock strategy avaialble.\n");
-    }
 
     // Tick Interval
     tick_interval_ms = tick;
