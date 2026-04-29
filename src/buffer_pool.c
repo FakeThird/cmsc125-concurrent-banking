@@ -11,9 +11,9 @@ void init_buffer_pool(BufferPool *pool)
 {
     for (int i = 0; i < BUFFER_POOL_SIZE; i++)
     {
-        pool->slots[i].in_use     = false;
+        pool->slots[i].in_use = false;
         pool->slots[i].account_id = -1;
-        pool->slots[i].data       = NULL;
+        pool->slots[i].data = NULL;
     }
 
     sem_init(&pool->empty_slots, 0, BUFFER_POOL_SIZE);
@@ -22,11 +22,35 @@ void init_buffer_pool(BufferPool *pool)
 }
 
 // Load account into buffer pool (producer)
-void load_account(BufferPool *pool, int account_id)
+Account *load_account(BufferPool *pool, int account_id)
 {
+    pthread_mutex_lock(&pool->pool_lock);
+
+    // Find and load account
+    for (int i = 0; i < BUFFER_POOL_SIZE; i++)
+    {
+        if (pool->slots[i].in_use &&
+            pool->slots[i].account_id == account_id)
+        {
+            pthread_mutex_unlock(&pool->pool_lock);
+            return pool->slots[i].data;
+        }
+    }
+
+    pthread_mutex_unlock(&pool->pool_lock);
+
     sem_wait(&pool->empty_slots); // Wait for empty slot
 
     pthread_mutex_lock(&pool->pool_lock);
+
+    Account *acc = find_account(account_id);
+    if (!acc)
+    {
+        pthread_mutex_unlock(&pool->pool_lock);
+        sem_post(&pool->empty_slots); // Signal slot is still empty
+        fprintf(stderr, "Account %d not found in bank.\n", account_id);
+        return NULL;                  // Account not found
+    }
 
     // Find empty slot and load account
     for (int i = 0; i < BUFFER_POOL_SIZE; i++)
@@ -34,15 +58,19 @@ void load_account(BufferPool *pool, int account_id)
         if (!pool->slots[i].in_use)
         {
             pool->slots[i].account_id = account_id;
-            pool->slots[i].data = &bank.accounts[account_id];
+            pool->slots[i].data = acc;
+            // pool->slots[i].data = &bank.accounts[account_id];
             pool->slots[i].in_use = true;
-            break;
+            pthread_mutex_unlock(&pool->pool_lock);
+            sem_post(&pool->full_slots); // Signal slot is full
+            return acc;
         }
     }
 
     pthread_mutex_unlock(&pool->pool_lock);
 
-    sem_post(&pool->full_slots); // Signal slot is full
+    sem_post(&pool->empty_slots); // Signal slot is still empty
+    return NULL; // Should not reach here if semaphores are correct
 }
 
 // Unload account from buffer pool (consumer)
