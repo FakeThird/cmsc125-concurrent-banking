@@ -22,8 +22,12 @@ typedef struct {
     pthread_mutex_t pool_lock;
 } BufferPool;
 
+extern BufferPool buffer_pool;
+
 void init_buffer_pool(BufferPool* pool);
-void load_account(BufferPool* pool, int account_id);
+Account* load_account(BufferPool* pool, int account_id);
 void unload_account(BufferPool* pool, int account_id);
+// Account* buffer_get_account(BufferPool* pool, int account_id);
+// void buffer_release_account(BufferPool* pool, int account_id);
 
 #endif

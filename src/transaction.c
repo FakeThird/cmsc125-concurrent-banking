@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 
+// main.c defined
+extern bool verbose;
+
 void* execute_transaction(void* arg) {
     Transaction* tx = (Transaction*)arg;
     
@@ -22,28 +25,50 @@ void* execute_transaction(void* arg) {
         switch (op->type) {
             case OP_DEPOSIT:
                 deposit(op->account_id, op->amount_centavos);
+                if (verbose) {
+                    printf("[tick=%d] T%d DEPOSIT A%d +%d\n",
+                           get_tick(), tx->tx_id, op->account_id, op->amount_centavos);
+                }
                 break;
                 
             case OP_WITHDRAW:
                 if (!withdraw(op->account_id, op->amount_centavos)) {
                     // Insufficient funds - abort transaction
+                    if (verbose) {
+                        printf("[tick=%d] T%d WITHDRAW A%d -%d  FAILED (Insufficient funds)\n",
+                               get_tick(), tx->tx_id, op->account_id, op->amount_centavos);
+                    }
                     tx->status = TX_ABORTED;
+                    tx->actual_end = get_tick();
                     return NULL;
+                }
+                if (verbose) {
+                    printf("[tick=%d] T%d WITHDRAW A%d -%d\n",
+                           get_tick(), tx->tx_id, op->account_id, op->amount_centavos);
                 }
                 break;
                 
             case OP_TRANSFER:
                 if (!transfer(op->account_id, op->target_account,
                               op->amount_centavos)) {
+                    if (verbose) {
+                        printf("[tick=%d] T%d TRANSFER A%d->A%d -%d FAILED (Insufficient funds)\n",
+                               get_tick(), tx->tx_id, op->account_id, op->target_account, op->amount_centavos);
+                    }
                     tx->status = TX_ABORTED;
+                    tx->actual_end = get_tick();
                     return NULL;
+                }
+                if (verbose) {
+                    printf("[tick=%d] T%d TRANSFER A%d->A%d %d\n",
+                           get_tick(), tx->tx_id, op->account_id, op->target_account, op->amount_centavos);
                 }
                 break;
                 
             case OP_BALANCE:
                 int balance = get_balance(op->account_id);
-                printf("T%d: Account %d balance = PHP %d.%02d\n", 
-                       tx->tx_id, op->account_id, 
+                printf("[tick=%d] T%d BALANCE A%d = PHP %d.%02d\n",
+                       get_tick(), tx->tx_id, op->account_id,
                        balance / 100, balance % 100);
                 break;
         }
@@ -53,6 +78,11 @@ void* execute_transaction(void* arg) {
     
     tx->actual_end = get_tick();
     tx->status = TX_COMMITTED;
+
+    if (verbose) {
+        printf("[tick=%d] T%d COMMITTED\n", get_tick(), tx->tx_id);
+    }
+
     return NULL;
 }
 

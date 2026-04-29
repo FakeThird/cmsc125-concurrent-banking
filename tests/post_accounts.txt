@@ -1,6 +1,0 @@
-# AccountID  FinalBalanceCentavos
-
-0    10000
-1    25000
-10   58000
-20   30000

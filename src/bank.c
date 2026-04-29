@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include "../include/bank.h"
 #include "../include/utils.h"
+#include "../include/buffer_pool.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -12,41 +13,49 @@ Bank bank;
 
 int get_balance(int account_id)
 {
-    Account *acc = find_account(account_id);
-    if (!acc) return -1;
+    Account *acc = load_account(&buffer_pool, account_id);
+    if (!acc)
+        return -1;
 
     pthread_rwlock_rdlock(&acc->lock);
     int balance = acc->balance_centavos;
     pthread_rwlock_unlock(&acc->lock);
 
+    unload_account(&buffer_pool, account_id);
     return balance;
 }
 
 void deposit(int account_id, int amount_centavos)
 {
-    Account *acc = find_account(account_id);
-    if (!acc) return;
+    Account *acc = load_account(&buffer_pool, account_id);
+    if (!acc)
+        return;
 
     pthread_rwlock_wrlock(&acc->lock);
     acc->balance_centavos += amount_centavos;
     pthread_rwlock_unlock(&acc->lock);
+
+    unload_account(&buffer_pool, account_id);
 }
 
 bool withdraw(int account_id, int amount_centavos)
 {
-    Account *acc = find_account(account_id);
-    if (!acc) return false;
+    Account *acc = load_account(&buffer_pool, account_id);
+    if (!acc)
+        return false;
 
     pthread_rwlock_wrlock(&acc->lock);
 
     if (acc->balance_centavos < amount_centavos)
     {
         pthread_rwlock_unlock(&acc->lock);
+        unload_account(&buffer_pool, account_id);
         return false; // Insufficient funds
     }
 
     acc->balance_centavos -= amount_centavos;
     pthread_rwlock_unlock(&acc->lock);
+    unload_account(&buffer_pool, account_id);
     return true;
 }
 
@@ -54,10 +63,14 @@ bool transfer(int from_id, int to_id, int amount_centavos)
 {
     // This is where deadlock can occur!
     // See Part 3 for proper implementation
-    Account *a = find_account(from_id);
-    Account *b = find_account(to_id);
+    Account *a = load_account(&buffer_pool, from_id);
+    Account *b = load_account(&buffer_pool, to_id);
     if (!a || !b)
     {
+        if (a)
+            unload_account(&buffer_pool, from_id);
+        if (b)
+            unload_account(&buffer_pool, to_id);
         return false; // Invalid accounts
     }
     Account *first = (from_id < to_id) ? a : b;
@@ -69,8 +82,10 @@ bool transfer(int from_id, int to_id, int amount_centavos)
     // Check sufficient funds
     if (a->balance_centavos < amount_centavos)
     {
-        pthread_rwlock_unlock(&second->lock);
         pthread_rwlock_unlock(&first->lock);
+        pthread_rwlock_unlock(&second->lock);
+        unload_account(&buffer_pool, from_id);
+        unload_account(&buffer_pool, to_id);
         return false; // Insufficient funds
     }
 
@@ -78,8 +93,10 @@ bool transfer(int from_id, int to_id, int amount_centavos)
     a->balance_centavos -= amount_centavos;
     b->balance_centavos += amount_centavos;
 
-    pthread_rwlock_unlock(&second->lock);
     pthread_rwlock_unlock(&first->lock);
+    pthread_rwlock_unlock(&second->lock);
+    unload_account(&buffer_pool, from_id);
+    unload_account(&buffer_pool, to_id);
     return true;
 }
 

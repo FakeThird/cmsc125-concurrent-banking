@@ -2,6 +2,7 @@
 #include "../include/timer.h"
 
 #include <pthread.h>
+#include <unistd.h>
 
 volatile int global_tick = 0;
 volatile int simulation_running = 0;
