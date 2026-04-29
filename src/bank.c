@@ -21,6 +21,7 @@ int get_balance(int account_id)
     int balance = acc->balance_centavos;
     pthread_rwlock_unlock(&acc->lock);
 
+    unload_account(&buffer_pool, account_id);
     return balance;
 }
 
